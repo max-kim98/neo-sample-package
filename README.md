@@ -19,6 +19,21 @@ The resolved project name is used for:
 - frontend homepage: `/web/apps/<project-name>/`
 - `/api/version` response `name`
 
+## Version Rule
+
+Version is resolved from a single source using:
+
+- Shell: `./scripts/version.sh`
+- PowerShell: `./scripts/version.ps1`
+
+Resolution order:
+
+1. `PACKAGE_VERSION` environment variable
+2. current tag/ref (`vX.Y.Z` or `X.Y.Z`)
+3. fallback `0.0.0-dev`
+
+`/api/version` response `version` is injected at build time through `go build -ldflags`.
+
 ## Backend API
 
 - `GET /api/health`
@@ -64,6 +79,13 @@ CI=true npm test
 ./scripts/smoke.sh
 ```
 
+Tag-style version override example:
+
+```bash
+PACKAGE_VERSION=v1.2.3 ./scripts/package.sh
+PACKAGE_VERSION=v1.2.3 ./scripts/smoke.sh
+```
+
 On Windows:
 
 ```cmd
@@ -74,8 +96,24 @@ powershell -ExecutionPolicy Bypass -File scripts\\smoke.ps1
 ## GitHub Actions
 
 - CI workflow: `.github/workflows/ci.yml`
-  - matrix: ubuntu-latest, macos-latest, windows-latest
+  - triggers: `push` to `main`, `pull_request`
+  - matrix: `ubuntu-latest`, `macos-latest`, `windows-latest`
   - runs backend tests, frontend tests, package validation, smoke tests
 - Release workflow: `.github/workflows/release.yml`
-  - triggered by version tags (`v*` or `x.y.z`)
+  - trigger: version tags (`v*` or `x.y.z`)
+  - validates tag/version consistency before build
   - runs verification first, then creates GitHub release
+
+## Branch and PR Rule
+
+- create work branches as `issue-<number>`
+- open a PR per issue branch
+- merge only after CI passes
+
+## Failure Conditions
+
+Pipeline must fail when:
+
+- release tag and resolved package version do not match
+- smoke test `/api/version` does not match resolved version
+- packaging output contract is violated
