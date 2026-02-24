@@ -1,0 +1,19 @@
+# Build outputs
+frontend/build/
+coverage/
+.cache/
+
+# Node
+frontend/node_modules/
+
+# Go
+*.test
+*.out
+
+# Runtime artifacts
+.backend/pid
+storage/
+
+# OS/editor
+.DS_Store
+Thumbs.db
