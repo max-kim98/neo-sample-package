@@ -13,6 +13,7 @@ frontend/node_modules/
 # Runtime artifacts
 .backend/pid
 storage/
+smoke.log
 
 # OS/editor
 .DS_Store
