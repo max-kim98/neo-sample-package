@@ -1,7 +1,9 @@
 $root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $projectName = (& (Join-Path $root "scripts/project-name.ps1")).Trim()
+$expectedVersion = (& (Join-Path $root "scripts/version.ps1")).Trim()
 $output = Join-Path $root "frontend/build"
 $healthUrl = "http://127.0.0.1:12345/api/health"
+$versionUrl = "http://127.0.0.1:12345/api/version"
 
 $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c .\\.backend\\start.cmd" -WorkingDirectory $output -PassThru
 
@@ -20,6 +22,11 @@ try {
 
   if (-not $ready) {
     throw "backend health endpoint not ready"
+  }
+
+  $version = Invoke-RestMethod -Method Get -Uri $versionUrl -TimeoutSec 2
+  if ($version.version -ne $expectedVersion) {
+    throw "version mismatch: expected $expectedVersion, got $($version.version)"
   }
 
   Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:12345/api/echo" -Body '{"message":"smoke"}' -ContentType 'application/json' | Out-Null
