@@ -30,7 +30,7 @@ func TestResolveProjectNameFallsBackToBinary(t *testing.T) {
 func TestAPIHealthVersionEchoAndItems(t *testing.T) {
   cfg := Config{
     ProjectName:  "project-alpha",
-    Version:      "0.1.0",
+    Version:      Version,
     Listen:       "http://127.0.0.1:12345",
     PIDPath:      "./.backend/pid",
     DatabasePath: "",
@@ -68,8 +68,8 @@ func TestAPIHealthVersionEchoAndItems(t *testing.T) {
     if got["name"] != "project-alpha" {
       t.Fatalf("expected name project-alpha, got %#v", got["name"])
     }
-    if got["version"] != "0.1.0" {
-      t.Fatalf("expected version 0.1.0, got %#v", got["version"])
+    if got["version"] != Version {
+      t.Fatalf("expected version %s, got %#v", Version, got["version"])
     }
   })
 

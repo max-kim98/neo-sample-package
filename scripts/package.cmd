@@ -3,13 +3,20 @@ setlocal enabledelayedexpansion
 
 for %%I in ("%~dp0..") do set "ROOT=%%~fI"
 for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\project-name.ps1"`) do set "PROJECT_NAME=%%I"
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\version.ps1"`) do set "PACKAGE_VERSION=%%I"
 
 if "%PROJECT_NAME%"=="" (
   echo failed to resolve project name
   exit /b 1
 )
 
+if "%PACKAGE_VERSION%"=="" (
+  echo failed to resolve package version
+  exit /b 1
+)
+
 set "PROJECT_NAME=%PROJECT_NAME%"
+set "PACKAGE_VERSION=%PACKAGE_VERSION%"
 node "%ROOT%\scripts\set-frontend-homepage.js" "%PROJECT_NAME%" || exit /b 1
 
 pushd "%ROOT%\frontend"
@@ -28,9 +35,9 @@ pushd "%ROOT%"
 set CGO_ENABLED=0
 set GOOS=linux
 set GOARCH=amd64
-go build -o "%ROOT%\frontend\build\.backend\%PROJECT_NAME%" . || exit /b 1
+go build -ldflags "-X github.com/max-kim98/neo-sample-package/backend.Version=%PACKAGE_VERSION%" -o "%ROOT%\frontend\build\.backend\%PROJECT_NAME%" . || exit /b 1
 set GOOS=windows
-go build -o "%ROOT%\frontend\build\.backend\%PROJECT_NAME%.exe" . || exit /b 1
+go build -ldflags "-X github.com/max-kim98/neo-sample-package/backend.Version=%PACKAGE_VERSION%" -o "%ROOT%\frontend\build\.backend\%PROJECT_NAME%.exe" . || exit /b 1
 set GOOS=
 set GOARCH=
 popd
