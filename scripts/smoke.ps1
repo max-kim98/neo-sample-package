@@ -26,7 +26,13 @@ try {
   Write-Output "smoke test passed"
 }
 finally {
-  cmd /c .\.backend\stop.cmd | Out-Null
+  Push-Location $output
+  try {
+    cmd /c .\.backend\stop.cmd | Out-Null
+  }
+  finally {
+    Pop-Location
+  }
   if (-not $proc.HasExited) {
     $proc.Kill()
   }
