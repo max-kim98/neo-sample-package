@@ -24,6 +24,20 @@ jobs:
           go-version: '1.26.x'
           cache: false
 
+      - name: Validate release tag version
+        run: |
+          resolved="$(./scripts/version.sh)"
+          ref="${GITHUB_REF_NAME#v}"
+          if [ "${resolved}" = "0.0.0-dev" ]; then
+            echo "failed to resolve release version from tag"
+            exit 1
+          fi
+          if [ "${resolved}" != "${ref}" ]; then
+            echo "tag/version mismatch: ref=${GITHUB_REF_NAME} resolved=${resolved}"
+            exit 1
+          fi
+          echo "PACKAGE_VERSION=${resolved}" >> "$GITHUB_ENV"
+
       - name: Go backend tests
         run: go test ./backend -count=1
 

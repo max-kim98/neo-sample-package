@@ -3,8 +3,10 @@ set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 project_name="$(${root_dir}/scripts/project-name.sh)"
+expected_version="$(${root_dir}/scripts/version.sh)"
 output_dir="${root_dir}/frontend/build"
 health_url="http://127.0.0.1:12345/api/health"
+version_url="http://127.0.0.1:12345/api/version"
 
 echo "starting backend for smoke test..."
 (
@@ -30,6 +32,12 @@ for _ in $(seq 1 30); do
 done
 
 curl -sf "$health_url" >/dev/null
+
+version_payload="$(curl -sf "$version_url")"
+if [[ "${version_payload}" != *"\"version\":\"${expected_version}\""* ]]; then
+  echo "version mismatch: expected ${expected_version}, got ${version_payload}" >&2
+  exit 1
+fi
 
 curl -sf -X POST "$health_url" -o /dev/null >/dev/null 2>&1 || true
 curl -sf -X POST http://127.0.0.1:12345/api/echo \
