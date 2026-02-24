@@ -28,10 +28,12 @@ jobs:
         run: go test ./backend -count=1
 
       - name: Frontend tests
+        env:
+          CI: "true"
         run: |
           cd frontend
           npm install --no-audit --no-fund
-          CI=true npm test -- --watchman=false
+          npm test
 
       - name: Package and smoke
         run: |

@@ -1,12 +1,20 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { vi } from 'vitest';
+import App from './App.jsx';
 import * as api from './api/api';
 
-jest.mock('./api/api');
+vi.mock('./api/api', () => ({
+  fetchHealth: vi.fn(),
+  fetchVersion: vi.fn(),
+  sendEcho: vi.fn(),
+  fetchItems: vi.fn(),
+  createItem: vi.fn(),
+  deleteItem: vi.fn()
+}));
 
 afterEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 test('renders package dashboard title', () => {

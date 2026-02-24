@@ -40,7 +40,7 @@ jobs:
         run: |
           cd frontend
           npm install --no-audit --no-fund
-          npm test -- --watchman=false
+          npm test
 
       - name: Package (unix)
         if: runner.os != 'Windows'

@@ -54,7 +54,7 @@ go test ./backend -count=1
 ```bash
 cd frontend
 npm install --no-audit --no-fund
-CI=true npm test -- --watchman=false
+CI=true npm test
 ```
 
 ### Package + structure verify + smoke
