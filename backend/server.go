@@ -17,7 +17,7 @@ import (
   "time"
 )
 
-var Version = "0.1.0"
+var Version = "0.0.0-dev"
 
 const (
   defaultListen       = "http://127.0.0.1:12345"
